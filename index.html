@@ -6,99 +6,290 @@
 <title>Apple of Fortune</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{background:#000;color:#333;font-family:'Segoe UI',Tahoma,Arial,sans-serif;min-height:100vh;overflow:hidden;user-select:none}
+body{background:#000;color:#fff;font-family:'Segoe UI',Tahoma,Arial,sans-serif;min-height:100vh;overflow-x:hidden;user-select:none}
 
-#appleScreen{position:fixed;inset:0;z-index:150;display:flex;background:url('https://raw.githubusercontent.com/turbo1-2/my-images/refs/heads/main/ab488ed6-75a0-4fc5-899c-d1b16caadb06.jpeg') center/cover no-repeat}
-.apple-inner{width:100%;height:100%;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(0,20,10,.3) 0%,rgba(0,20,10,.1) 40%,rgba(0,20,10,.5) 100%);position:relative;overflow:hidden}
-.apple-top{padding:10px 12px 6px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:relative;min-height:50px}
-.apple-back-btn{background:rgba(20,30,50,.8);border:none;color:#fff;font-size:16px;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.loading-screen{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;background:transparent}
+.loading-screen.hidden{display:none}
+.spinner{width:50px;height:50px;border:4px solid rgba(74,144,226,.3);border-top-color:#4a90e2;border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{100%{transform:rotate(360deg)}}
 
-.apple-balance-wrap{position:absolute;left:50%;top:8px;transform:translateX(-50%);display:flex;align-items:center;gap:6px;direction:ltr}
-.apple-plus-btn{width:36px;height:36px;background:linear-gradient(180deg,#3ddc7a,#2eb863);color:#fff;border:none;border-radius:12px;font-size:22px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;box-shadow:0 2px 8px rgba(46,204,113,.55)}
-.apple-balance-val{background:#0e1520;color:#fff;font-size:14px;font-weight:700;padding:9px 16px;border-radius:12px;display:flex;align-items:center;gap:5px;direction:rtl;min-width:90px;justify-content:center;border:1px solid rgba(255,255,255,.06)}
-.apple-balance-val .cur{font-size:11px;font-weight:500;opacity:.9}
+#appleScreen{position:fixed;inset:0;z-index:150;display:none;background:url('https://raw.githubusercontent.com/turbo1-2/my-images/refs/heads/main/ab488ed6-75a0-4fc5-899c-d1b16caadb06.jpeg') center/cover no-repeat}
+#appleScreen.active{display:flex}
+.apple-inner{width:100%;height:100%;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(0,20,10,.45) 0%,rgba(0,20,10,.15) 40%,rgba(0,20,10,.65) 100%);position:relative;overflow:hidden}
 
-.apple-main{flex:1;display:flex;justify-content:center;align-items:center;padding:6px 14px;min-height:0;overflow:hidden;position:relative}
-.apple-grid-wrap{display:flex;flex-direction:row;gap:4px;height:100%;max-height:100%}
-.apple-grid{display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(10,1fr);gap:2px;aspect-ratio:5/10;height:100%;max-height:100%}
-.apple-cell{position:relative;display:flex;align-items:center;justify-content:center;overflow:visible}
-.apple-cell img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none}
-.apple-cell.clickable{cursor:pointer}
-
-.apple-mults{display:grid;grid-template-rows:repeat(10,1fr);gap:2px;width:46px;flex-shrink:0;padding:4px 0}
-.apple-mult{display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);color:#fff;font-size:8.5px;font-weight:700;border-radius:6px;direction:ltr;border:1px solid rgba(255,255,255,.06);backdrop-filter:blur(3px);height:100%;max-height:26px;align-self:center;transition:.3s;letter-spacing:.2px}
-.apple-mult .txt{opacity:0;transition:opacity .35s ease}
-.apple-mults.show-text .apple-mult .txt{opacity:1}
-.apple-mult.current{background:#8bc34a;color:#fff;font-weight:900;box-shadow:0 0 10px rgba(139,195,74,.7);border-color:rgba(255,255,255,.3)}
-.apple-mult.current .txt{opacity:1}
-.apple-mult.done{background:rgba(255,255,255,.04);opacity:.35}
-
-.apple-bottom{padding:8px 12px 12px;flex-shrink:0;min-height:1px}
-.apple-ctrl-row{display:flex;gap:6px;margin-bottom:8px}
-.apple-ctrl-row button{flex:1;background:rgba(100,140,220,.65);color:#fff;border:none;padding:10px;border-radius:20px;font-weight:800;font-size:12px;cursor:pointer;letter-spacing:.5px;backdrop-filter:blur(4px);transition:.2s}
-.apple-ctrl-row button:disabled{opacity:.3;cursor:default}
-
-.apple-winnings-bar{
-    background:rgba(0,0,0,.55);
-    color:#fff;
-    text-align:center;
-    font-size:14px;
-    font-weight:700;
-    padding:11px 12px;
-    border-radius:8px;
-    margin-bottom:8px;
-    display:none;
-    backdrop-filter:blur(4px);
-    border:1px solid rgba(255,255,255,.08);
+/* ⭐ الشريط العلوي */
+.apple-top{
+    padding:10px 14px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-shrink:0;
+    background:rgba(0,0,0,.4);
+    backdrop-filter:blur(6px);
+    min-height:50px;
 }
+.top-left-icons{display:flex;align-items:center;gap:12px}
+.top-left-icons button{background:transparent;border:none;color:#fff;font-size:20px;cursor:pointer;padding:0}
+.top-center-balance{display:flex;align-items:center;gap:6px;direction:ltr}
+.top-center-balance .bal-val{color:#fff;font-size:15px;font-weight:800;text-shadow:0 2px 4px rgba(0,0,0,.8)}
+.top-center-balance .plus-btn{width:28px;height:28px;background:#2eb863;color:#fff;border:none;border-radius:50%;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;box-shadow:0 2px 6px rgba(46,204,113,.5)}
+.top-right-icons{display:flex;align-items:center;gap:10px}
+.top-right-icons button{background:transparent;border:none;color:#fff;font-size:20px;cursor:pointer;padding:0}
+
+/* ⭐ عنوان اللعبة */
+.apple-title{
+    color:#fff;font-size:14px;font-weight:800;letter-spacing:2px;
+    text-shadow:0 2px 8px rgba(0,0,0,.9);text-align:center;
+    padding:6px 0 2px;flex-shrink:0;
+}
+
+/* ⭐ منطقة اللعب */
+.apple-main{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    padding:5px 10px 0 10px;
+    min-height:0;
+    overflow:hidden;
+    position:relative;
+}
+.apple-grid-wrap{
+    display:flex;
+    flex-direction:row;
+    gap:8px;
+    height:100%;
+    max-height:100%;
+    align-items:center;
+    justify-content:center;
+    direction:ltr;
+    width:100%;
+    max-width:290px;
+    padding:0;
+    box-sizing:border-box;
+}
+
+/* ⭐ الشبكة (Grid) */
+.apple-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    grid-template-rows:repeat(9,1fr);
+    gap:0px;
+    flex:1;
+    height:100%;
+    width:100%;
+    direction:ltr;
+    align-content:center;
+}
+.apple-cell{
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:visible;
+}
+.apple-cell img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;}
+.apple-cell:nth-child(n+6) { margin-top: -6px; }
+.apple-cell.clickable{cursor:pointer}
+.apple-cell.clickable:active{transform:scale(.92);transition:transform .1s}
+
+/* ⭐ عمود المضاعفات (الشكل النهائي زي الصورة) */
+.apple-mults{
+    display:grid;
+    grid-template-rows:repeat(9,1fr);
+    gap:6px;
+    flex-shrink:0;
+    padding:0;
+    align-items:center;
+    width:48px;
+    height:100%;
+    direction:ltr;
+    align-content:center;
+}
+
+.apple-mult{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    /* ⭐ الصورة اللي بعتها كخلفية مع شكل الكبسولة */
+    background-image: url('https://i.postimg.cc/C5Y8LkHT/Picsart-26-10-06-19-06-22-804.png');
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    border-radius: 50px; /* الشكل البيضاوي الكامل */
+    height: 100%;
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    padding: 0 4px;
+    position: relative;
+    overflow: hidden;
+    border: none;
+    box-shadow: none;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+}
+
+.apple-mult:nth-child(n+2) { margin-top: 0; }
+
+/* ⭐ إخفاء الأرقام تماماً في البداية */
+.apple-mult .txt{
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    direction: ltr;
+}
+
+/* ⭐ إظهار الأرقام بعد بدء الرهان */
+.apple-mults.show .apple-mult .txt{
+    opacity: 1;
+}
+
+/* ⭐ الخانة الحالية (المضيئة) */
+.apple-mult.current{
+    background: linear-gradient(180deg, #8bc34a, #689f38);
+    box-shadow: 0 2px 10px rgba(139,195,74,.85);
+    transform: scale(1.05);
+    z-index: 10;
+}
+
+/* ⭐ الجزء السفلي (Controls) */
+.apple-bottom{padding:0 14px 10px;flex-shrink:0;display:flex;flex-direction:column;gap:8px}
+
+/* صف الأزرار MIN X2 X/2 MAX */
+.apple-ctrl-row{display:flex;gap:6px;direction:ltr;}
+.apple-ctrl-row button{
+    flex:1;
+    background:linear-gradient(180deg,#4a90e2,#3b7fd1);
+    color:#fff;border:none;padding:10px 4px;
+    border-radius:22px;font-weight:800;font-size:13px;
+    cursor:pointer;transition:.2s;
+    box-shadow:0 2px 8px rgba(0,0,0,.3);
+}
+.apple-ctrl-row button:active{transform:scale(.95)}
+.apple-ctrl-row button:disabled{opacity:.4}
+
+/* ⭐ صف الرهان */
+.apple-stake-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    background:rgba(20,35,60,.85);
+    border-radius:14px;
+    padding:8px 12px;
+    backdrop-filter:blur(6px);
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow:0 4px 15px rgba(0,0,0,.3);
+    direction:ltr;
+}
+
+.stake-input-group{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    min-width:0;
+}
+
+.apple-stake-input{
+    background:transparent;
+    border:none;
+    border-bottom:1px solid rgba(255,255,255,.25);
+    color:#fff;
+    font-size:22px;
+    font-weight:800;
+    padding:2px 0 2px;
+    outline:none;
+    direction:ltr;
+    font-family:inherit;
+    width:100%;
+    text-align:left;
+}
+.apple-stake-input:disabled{opacity:.6}
+.apple-stake-input::-webkit-outer-spin-button,.apple-stake-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+
+.stake-limits{
+    font-size:11px;
+    color:#8fa0b5;
+    margin-top:2px;
+    text-align:left;
+    direction:ltr;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.apple-action-btn{
+    background:linear-gradient(180deg,#4a90e2,#3b7fd1);
+    color:#fff;
+    border:none;
+    border-radius:20px;
+    padding:12px 22px;
+    font-weight:900;
+    font-size:15px;
+    cursor:pointer;
+    transition:.2s;
+    box-shadow:0 4px 12px rgba(74,144,226,.4);
+    flex-shrink:0;
+}
+.apple-action-btn:active{transform:scale(.96)}
+.apple-action-btn:disabled{opacity:.6}
+
+/* ⭐ شريط الأرباح */
+.apple-winnings-bar{background:rgba(0,0,0,.6);color:#fff;text-align:center;font-size:13px;font-weight:700;padding:10px;border-radius:8px;margin-bottom:8px;display:none;backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.08)}
 .apple-winnings-bar.show{display:block}
 .apple-winnings-bar .val{color:#8bc34a;font-weight:900;font-size:16px}
 
-.apple-stake-row{display:flex;align-items:center;gap:8px;flex-direction:row-reverse}
-.apple-action-btn{background:#3b82f6;color:#fff;border:none;border-radius:24px;padding:13px 22px;font-weight:900;font-size:14px;cursor:pointer;letter-spacing:.3px;min-width:130px;transition:.2s;line-height:1.1}
-.apple-action-btn:disabled{opacity:.6;cursor:default}
-.apple-stake-display{flex:1;background:rgba(10,20,35,.85);border:1.5px solid rgba(255,255,255,.1);border-radius:12px;padding:11px 16px;color:#fff;font-size:16px;font-weight:700;display:flex;justify-content:flex-end;gap:6px;align-items:center;direction:ltr;transition:transform .2s}
-.apple-stake-display.pop{animation:stakePop .3s ease}
-@keyframes stakePop{0%{transform:scale(1)}50%{transform:scale(1.06);background:rgba(139,195,74,.25)}100%{transform:scale(1)}}
-
-.apple-full-cashout{display:none;margin-top:0}
+.apple-full-cashout{display:none;margin-top:8px}
 .apple-full-cashout.show{display:block}
-.apple-full-cashout button{width:100%;background:#3b82f6;color:#fff;border:none;padding:17px;border-radius:14px;font-size:17px;font-weight:800;cursor:pointer;letter-spacing:.5px;box-shadow:0 3px 12px rgba(59,130,246,.45);font-family:inherit;transition:.2s;}
-.apple-full-cashout button:active{transform:scale(.98)}
+.apple-full-cashout button{width:100%;background:linear-gradient(180deg,#4a90e2,#3b7fd1);color:#fff;border:none;padding:15px;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer}
 
 .apple-gameover-row{display:none;flex-direction:column;gap:8px;margin-top:8px}
 .apple-gameover-row.show{display:flex}
-.play-again-btn{background:#3b82f6;color:#fff;border:none;padding:14px;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;letter-spacing:.3px;box-shadow:0 3px 12px rgba(59,130,246,.4);}
-.new-bet-btn{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.35);padding:13px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.3px;}
+.play-again-btn{background:linear-gradient(180deg,#4a90e2,#3b7fd1);color:#fff;border:none;padding:14px;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer}
+.new-bet-btn{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.35);padding:12px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer}
 
-.apple-result-overlay{position:absolute;inset:0;display:none;align-items:center;justify-content:center;z-index:200;pointer-events:none;background:rgba(0,0,0,.42);}
+/* ⭐ شاشة النتيجة */
+.apple-result-overlay{position:absolute;inset:0;display:none;align-items:center;justify-content:center;z-index:200;pointer-events:none;background:transparent}
 .apple-result-overlay.show{display:flex}
 .result-content{text-align:center;padding:20px}
-.result-title{font-size:52px;font-weight:900;color:#8bc34a;text-shadow:0 4px 22px rgba(139,195,74,.75),0 0 50px rgba(139,195,74,.5),0 2px 6px rgba(0,0,0,.9);margin-bottom:6px;animation:resultPop .4s cubic-bezier(.2,.9,.3,1.4);letter-spacing:1px;}
-.result-title.lose{font-size:26px;color:#eaffea;text-shadow:0 4px 22px rgba(139,195,74,.55),0 0 40px rgba(139,195,74,.35),0 2px 6px rgba(0,0,0,.95);line-height:1.5;font-weight:900;max-width:340px;margin:0 auto 10px;letter-spacing:.5px;}
-.result-msg{font-size:20px;font-weight:800;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.95);margin-top:4px;}
+.result-title{font-size:52px;font-weight:900;color:#8bc34a;text-shadow:0 4px 22px rgba(0,0,0,.9),0 0 15px #000;margin-bottom:6px;animation:resultPop .4s cubic-bezier(.2,.9,.3,1.4)}
+.result-title.lose{font-size:26px;color:#eaffea;text-shadow:0 4px 22px rgba(0,0,0,.9),0 0 15px #000;line-height:1.5;font-weight:900;max-width:340px;margin:0 auto 10px}
+.result-msg{font-size:20px;font-weight:800;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.95),0 0 8px #000;margin-top:4px}
 .result-msg .amt{color:#fff;font-weight:900;font-size:22px}
 @keyframes resultPop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
-
-.toast{display:none;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:13px 24px;border-radius:10px;z-index:9000;font-size:13px;max-width:90%;text-align:center}
 </style>
 </head>
-<body>
+<body oncontextmenu="return false">
 
-<!-- APPLE -->
+<div id="loadingScreen" class="loading-screen">
+    <div class="spinner"></div>
+</div>
+
 <div id="appleScreen">
     <div class="apple-inner">
         <div class="apple-top">
-            <button class="apple-back-btn" onclick="closeApple()">→</button>
-            <div class="apple-balance-wrap">
-                <button class="apple-plus-btn" onclick="addFunds()">+</button>
-                <div class="apple-balance-val"><span id="appleBalance">0.00</span> <span class="cur">ج.م</span></div>
+            <div class="top-left-icons">
+                <button>←</button>
+            </div>
+            <div class="top-center-balance">
+                <span class="bal-val" id="appleBalance">140.07</span> <span class="cur" style="font-size:10px;opacity:.8">ج.م</span>
+                <button class="plus-btn" onclick="addFunds()">+</button>
+            </div>
+            <div class="top-right-icons">
+                <button>ℹ️</button>
             </div>
         </div>
+
+        <div class="apple-title">APPLE OF FORTUNE</div>
+
         <div class="apple-main">
             <div class="apple-grid-wrap">
-                <div class="apple-grid" id="appleGrid"></div>
                 <div class="apple-mults" id="appleMults"></div>
+                <div class="apple-grid" id="appleGrid"></div>
             </div>
             <div class="apple-result-overlay" id="appleResultOverlay">
                 <div class="result-content">
@@ -107,6 +298,7 @@ body{background:#000;color:#333;font-family:'Segoe UI',Tahoma,Arial,sans-serif;m
                 </div>
             </div>
         </div>
+
         <div class="apple-bottom">
             <div class="apple-ctrl-row" id="appleCtrlRow">
                 <button id="ctrlMin" onclick="appleCtrl('min')">MIN</button>
@@ -115,13 +307,16 @@ body{background:#000;color:#333;font-family:'Segoe UI',Tahoma,Arial,sans-serif;m
                 <button id="ctrlMax" onclick="appleCtrl('max')">MAX</button>
             </div>
 
-            <div class="apple-stake-row" id="appleStakeRow">
-                <button class="apple-action-btn" id="appleActionBtn" onclick="appleAction()">STAKE</button>
-                <div class="apple-stake-display" id="appleStakeDisplay"><span id="appleStakeVal">20</span></div>
-            </div>
-
             <div class="apple-winnings-bar" id="appleWinningsBar">
                 الأرباح الحالية: <span class="val" id="currentWinnings">0.00</span> ج.م
+            </div>
+
+            <div class="apple-stake-row" id="appleStakeRow">
+                <div class="stake-input-group">
+                    <input class="apple-stake-input" id="appleStakeVal" type="number" value="10" min="10" inputmode="numeric">
+                    <div class="stake-limits" id="stakeLimitsText">min 10 ج.م - max 74295.33 ج.م</div>
+                </div>
+                <button class="apple-action-btn" id="appleActionBtn" onclick="appleAction()">STAKE</button>
             </div>
 
             <div class="apple-full-cashout" id="appleFullCashout">
@@ -129,101 +324,72 @@ body{background:#000;color:#333;font-family:'Segoe UI',Tahoma,Arial,sans-serif;m
             </div>
 
             <div class="apple-gameover-row" id="appleGameoverRow">
-                <button class="play-again-btn" id="playAgainBtn" onclick="playAgain()">العب مرة أخرى (20 ج.م)</button>
+                <button class="play-again-btn" id="playAgainBtn" onclick="playAgain()">العب مرة أخرى (10 ج.م)</button>
                 <button class="new-bet-btn" onclick="newBet()">رهان جديد</button>
             </div>
         </div>
     </div>
 </div>
 
-<div id="toast" class="toast"></div>
-
-<!-- ================== Firebase Module ================== -->
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 import {getDatabase, ref, set} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey:"AIzaSyAUc2C9hG9VE7RECiW19QXjNZqVH96sFE",
-  authDomain:"zezo-59a8d.firebaseapp.com",
-  databaseURL:"https://zezo-59a8d-default-rtdb.firebaseio.com",
-  projectId:"zezo-59a8d",
-  storageBucket:"zezo-59a8d.firebasestorage.app",
-  messagingSenderId:"49183098248",
-  appId:"1:49183098248:web:37e3fb16744042a1bb263d"
+    apiKey: "AIzaSyAUc2C9hG9VE7RECiW19QXjNZqVH96sFE",
+    authDomain: "zezo-59a8d.firebaseapp.com",
+    databaseURL: "https://zezo-59a8d-default-rtdb.firebaseio.com",
+    projectId: "zezo-59a8d",
+    storageBucket: "zezo-59a8d.firebasestorage.app",
+    messagingSenderId: "49183098248",
+    appId: "1:49183098248:web:37e3fb16744042a1bb263d"
 };
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-const fbApp = initializeApp(firebaseConfig);
-const fbDb = getDatabase(fbApp);
+let _bal = 140.07;
 
-/* ⭐ حفظ توقعات التفاح في Firebase عشان سكريبت التوقعات يقرأها */
-window.saveApplePrediction = function(rottenAt){
-  try{
-    set(ref(fbDb, "applePrediction/current"), {
-      rottenAt: rottenAt,
-      timestamp: Date.now()
-    }).then(()=>{
-      console.log("[APPLE] Prediction saved:", rottenAt);
-    }).catch(err=>{
-      console.warn("[APPLE] Save failed:", err);
-    });
-  }catch(e){
-    console.warn("[APPLE] Exception:", e);
-  }
-};
-</script>
+function _updUI(){
+    const a = document.getElementById('appleBalance');
+    if(a) a.textContent = Number(_bal||0).toFixed(2);
 
-<script>
-(function(){
-    'use strict';
-    document.addEventListener('contextmenu', e => { e.preventDefault(); return false; });
-    document.addEventListener('dragstart', e => e.preventDefault());
-})();
-
-let balance = 1000;
-
-function updateBalanceUI(){
-    const ab = document.getElementById('appleBalance');
-    if(ab) ab.textContent = Number(balance||0).toFixed(2);
+    const limitsEl = document.getElementById('stakeLimitsText');
+    if(limitsEl){
+        limitsEl.textContent = `min 10 ج.م - max ${_bal.toFixed(2)} ج.م`;
+    }
 }
-function saveBalance(){
-    try{ localStorage.setItem('apple_balance', String(balance)); }catch(e){}
-}
-function loadBalance(){
-    try{
-        const v = localStorage.getItem('apple_balance');
-        if(v !== null) balance = Number(v)||0;
-    }catch(e){}
-}
-function addFunds(){
-    balance += 500;
-    updateBalanceUI(); saveBalance();
-    toast('تمت إضافة 500 ج.م');
-}
+function _setBal(v){ _bal = Number(v||0); _updUI(); }
 
-function toast(t){
-    const el = document.getElementById('toast');
-    el.textContent = t;
-    el.style.display = 'block';
-    clearTimeout(window._tt);
-    window._tt = setTimeout(()=> el.style.display='none', 2500);
-}
-
-const APPLE_MULTS = [1.00,1.23,1.54,1.93,2.41,4.33,8.66,17.30,34.60,69.30];
-const APPLE_ROWS = 10;
+const APPLE_MULTS = [1.23, 1.54, 1.93, 2.41, 4.02, 6.71, 11.18, 27.97, 69.93];
+const APPLE_ROWS = 9;
 const APPLE_COLS = 5;
 
-const APPLE_COVER_BOTTOM = 'https://raw.githubusercontent.com/turbo1-2/my-images/refs/heads/main/efc0e4cb-1559-4172-8df1-389128bf9fa7.png';
-const APPLE_COVER_TOP    = 'https://raw.githubusercontent.com/turbo1-2/my-images/refs/heads/main/new_version_5.png';
-const APPLE_SAFE         = 'https://raw.githubusercontent.com/turbo1-2/my-images/refs/heads/main/new_version_3.png';
-const APPLE_ROTTEN       = 'https://raw.githubusercontent.com/turbo1-2/my-images/refs/heads/main/new_version_1.png';
+const IMG_ROW0        = 'https://raw.githubusercontent.com/turbo1-2/my-images/refs/heads/main/efc0e4cb-1559-4172-8df1-389128bf9fa7.png';
+const IMG_TRANSPARENT = 'https://raw.githubusercontent.com/turbo1-2/my-images/refs/heads/main/new_version_2.png';
+const IMG_TOP         = 'https://raw.githubusercontent.com/turbo1-2/my-images/refs/heads/main/new_version_5.png';
+const IMG_SAFE        = 'https://raw.githubusercontent.com/turbo1-2/my-images/refs/heads/main/new_version_3.png';
+const IMG_ROTTEN      = 'https://raw.githubusercontent.com/turbo1-2/my-images/refs/heads/main/new_version_1.png';
+const IMG_PRESSED     = 'https://raw.githubusercontent.com/turbo1-2/my-images/refs/heads/main/2cbd9a5d-eb26-4355-b07d-635a56cbe6cb.png';
 
 let appleState = {
     active:false, finished:false, revealAll:false,
-    stake:20, stakePlaced:false, currentRow:0,
-    picks:{}, rottenAt:[], cashoutMult:1.00,
-    wonAmount:0
+    stake:10, stakePlaced:false, currentRow:0,
+    picks:{}, rottenAt:[], cashoutMult:1.23, wonAmount:0,
+    pressedCell:null
 };
+
+function _saveApplePrediction(rottenAt){
+    try{
+        set(ref(db,'applePrediction/current'), {
+            rottenAt: rottenAt,
+            timestamp: Date.now(),
+            rows: APPLE_ROWS,
+            cols: APPLE_COLS
+        })
+        .then(()=>{ console.log('[Firebase] Prediction saved:', rottenAt); })
+        .catch((err)=>{ console.error('[Firebase] Save error:', err); });
+    }catch(e){ console.error(e); }
+}
 
 function openApple(){
     appleState.active = true;
@@ -233,12 +399,17 @@ function openApple(){
     appleState.currentRow = 0;
     appleState.picks = {};
     appleState.rottenAt = [];
-    appleState.cashoutMult = 1.00;
-    appleState.stake = 20;
+    appleState.cashoutMult = 1.23;
+    appleState.stake = 10;
     appleState.wonAmount = 0;
+    appleState.pressedCell = null;
 
-    document.getElementById('appleStakeVal').textContent = '20';
-    updateBalanceUI();
+    const stkInp = document.getElementById('appleStakeVal');
+    stkInp.value = '10';
+    stkInp.disabled = false;
+
+    _updUI();
+    document.getElementById('appleMults').classList.remove('show');
     document.getElementById('appleWinningsBar').classList.remove('show');
     document.getElementById('appleFullCashout').classList.remove('show');
     document.getElementById('appleResultOverlay').classList.remove('show');
@@ -252,10 +423,37 @@ function openApple(){
 
     renderApple();
     updateAppleActionBtn();
-    document.getElementById('appleScreen').style.display = 'flex';
+    document.getElementById('appleScreen').classList.add('active');
 }
-function closeApple(){
-    newBet();
+
+function getCellImage(gameRow, col){
+    if(appleState.revealAll){
+        return (appleState.rottenAt[gameRow] === col) ? IMG_ROTTEN : IMG_SAFE;
+    }
+    if(appleState.pressedCell &&
+       appleState.pressedCell.row === gameRow &&
+       appleState.pressedCell.col === col){
+        return IMG_PRESSED;
+    }
+    const pickedCol = appleState.picks[gameRow];
+    const isRotten = appleState.rottenAt[gameRow] === pickedCol;
+
+    if(pickedCol !== undefined){
+        if(col === pickedCol) return isRotten ? IMG_ROTTEN : IMG_SAFE;
+        return IMG_TRANSPARENT;
+    }
+    if(!appleState.stakePlaced){
+        if(gameRow === 0) return IMG_ROW0;
+        if(gameRow >= 1 && gameRow <= 4) return IMG_TRANSPARENT;
+        if(gameRow >= 5) return IMG_TOP;
+    }
+    if(gameRow === appleState.currentRow && !appleState.finished){
+        return IMG_ROW0;
+    }
+    if(gameRow < appleState.currentRow) return IMG_TRANSPARENT;
+    if(gameRow >= 5) return IMG_TOP;
+    if(gameRow >= 1 && gameRow <= 4) return IMG_TRANSPARENT;
+    return IMG_ROW0;
 }
 
 function renderApple(){
@@ -264,33 +462,16 @@ function renderApple(){
 
     for(let vr=0; vr<APPLE_ROWS; vr++){
         const gameRow = APPLE_ROWS - 1 - vr;
-
         for(let c=0; c<APPLE_COLS; c++){
             const cell = document.createElement('div');
             cell.className = 'apple-cell';
-            let src = '';
-
-            if(appleState.revealAll){
-                src = (appleState.rottenAt[gameRow] === c) ? APPLE_ROTTEN : APPLE_SAFE;
-            }
-            else if(appleState.picks[gameRow] !== undefined){
-                if(c === appleState.picks[gameRow]){
-                    src = (appleState.rottenAt[gameRow] === c) ? APPLE_ROTTEN : APPLE_SAFE;
-                }else{
-                    src = APPLE_COVER_TOP;
-                }
-            }
-            else if(gameRow === appleState.currentRow && !appleState.finished){
-                src = APPLE_COVER_BOTTOM;
-            }
-            else{
-                src = APPLE_COVER_TOP;
-            }
-
-            cell.innerHTML = `<img src="${src}" alt="">`;
+            cell.dataset.row = gameRow;
+            cell.dataset.col = c;
+            cell.innerHTML = `<img src="${getCellImage(gameRow, c)}" alt="">`;
 
             const canClick = appleState.active && !appleState.finished && appleState.stakePlaced
-                && gameRow === appleState.currentRow && appleState.picks[gameRow] === undefined;
+                && gameRow === appleState.currentRow && appleState.picks[gameRow] === undefined
+                && !appleState.pressedCell;
 
             if(canClick){
                 cell.classList.add('clickable');
@@ -302,23 +483,17 @@ function renderApple(){
 
     const mults = document.getElementById('appleMults');
     mults.innerHTML = '';
-
-    if(appleState.stakePlaced && Object.keys(appleState.picks).length > 0)
-        mults.classList.add('show-text');
-    else
-        mults.classList.remove('show-text');
-
     for(let vr=0; vr<APPLE_ROWS; vr++){
         const gameRow = APPLE_ROWS - 1 - vr;
         const m = document.createElement('div');
         m.className = 'apple-mult';
-        const val = APPLE_MULTS[gameRow];
-        m.innerHTML = `<span class="txt">x${val.toFixed(2)}</span>`;
 
-        if(gameRow === appleState.currentRow && appleState.active && appleState.stakePlaced && !appleState.finished && Object.keys(appleState.picks).length > 0){
+        const val = APPLE_MULTS[gameRow];
+        const label = val >= 100 ? `x${val.toFixed(0)}` : `x${val.toFixed(2)}`;
+        m.innerHTML = `<span class="txt">${label}</span>`;
+
+        if(gameRow === appleState.currentRow && !appleState.finished && appleState.stakePlaced){
             m.classList.add('current');
-        }else if(gameRow < appleState.currentRow && appleState.active && !appleState.finished && appleState.stakePlaced){
-            m.classList.add('done');
         }
         mults.appendChild(m);
     }
@@ -329,63 +504,67 @@ function appleClick(gameRow, col){
     if(!appleState.stakePlaced) return;
     if(gameRow !== appleState.currentRow) return;
     if(appleState.picks[gameRow] !== undefined) return;
+    if(appleState.pressedCell) return;
 
-    appleState.picks[gameRow] = col;
-    const isRotten = appleState.rottenAt[gameRow] === col;
-
+    appleState.pressedCell = {row: gameRow, col: col};
     renderApple();
 
-    if(isRotten){
-        setTimeout(()=>{
-            appleState.finished = true;
-            appleState.cashoutMult = 0;
-            appleState.revealAll = true;
-            renderApple();
-            document.getElementById('appleWinningsBar').classList.remove('show');
-            document.getElementById('appleFullCashout').classList.remove('show');
-            showResultOverlay(false, 0);
-            showGameoverButtons(false);
-        }, 500);
-        return;
-    }
-
-    document.getElementById('appleFullCashout').classList.add('show');
-    updateWinningsBar();
-
-    if(gameRow === APPLE_ROWS - 1){
-        setTimeout(()=>{
-            appleState.finished = true;
-            appleState.cashoutMult = APPLE_MULTS[APPLE_ROWS - 1];
-            const win = appleState.stake * appleState.cashoutMult;
-            balance += win;
-            updateBalanceUI(); saveBalance();
-            appleState.revealAll = true;
-            appleState.wonAmount = win;
-            renderApple();
-            document.getElementById('appleWinningsBar').classList.remove('show');
-            document.getElementById('appleFullCashout').classList.remove('show');
-            showResultOverlay(true, win);
-            showGameoverButtons(true);
-        }, 500);
-        return;
-    }
-
     setTimeout(()=>{
-        appleState.currentRow = gameRow + 1;
-        appleState.cashoutMult = APPLE_MULTS[gameRow + 1];
+        appleState.pressedCell = null;
+        appleState.picks[gameRow] = col;
+        const isRotten = appleState.rottenAt[gameRow] === col;
         renderApple();
+
+        if(isRotten){
+            setTimeout(()=>{
+                appleState.finished = true;
+                appleState.cashoutMult = 0;
+                appleState.revealAll = true;
+                renderApple();
+                document.getElementById('appleWinningsBar').classList.remove('show');
+                document.getElementById('appleFullCashout').classList.remove('show');
+                showResultOverlay(false, 0);
+                showGameoverButtons(false);
+            }, 400);
+            return;
+        }
+
+        document.getElementById('appleFullCashout').classList.add('show');
         updateWinningsBar();
-    }, 500);
+
+        if(gameRow === APPLE_ROWS - 1){
+            setTimeout(()=>{
+                appleState.finished = true;
+                appleState.cashoutMult = APPLE_MULTS[APPLE_ROWS - 1];
+                const win = appleState.stake * appleState.cashoutMult;
+                _setBal(_bal + win);
+                appleState.revealAll = true;
+                appleState.wonAmount = win;
+                renderApple();
+                document.getElementById('appleWinningsBar').classList.remove('show');
+                document.getElementById('appleFullCashout').classList.remove('show');
+                showResultOverlay(true, win);
+                showGameoverButtons(true);
+            }, 400);
+            return;
+        }
+
+        setTimeout(()=>{
+            appleState.currentRow = gameRow + 1;
+            appleState.cashoutMult = APPLE_MULTS[gameRow + 1];
+            renderApple();
+            updateWinningsBar();
+        }, 400);
+
+    }, 200);
 }
 
 function showResultOverlay(isWin, win){
     const ov = document.getElementById('appleResultOverlay');
-
     if(isWin){
         document.getElementById('resultTitle').textContent = 'فوز';
         document.getElementById('resultTitle').className = 'result-title';
-        document.getElementById('resultMsg').innerHTML =
-            `لقد ربحت <span class="amt">${win.toFixed(1)}</span> ج.م`;
+        document.getElementById('resultMsg').innerHTML = `لقد ربحت <span class="amt">${win.toFixed(1)}</span> ج.م`;
     }else{
         document.getElementById('resultTitle').textContent = 'حظ أوفر في المرة القادمة!';
         document.getElementById('resultTitle').className = 'result-title lose';
@@ -407,12 +586,10 @@ function showGameoverButtons(won){
 
 function updateWinningsBar(){
     const bar = document.getElementById('appleWinningsBar');
-
     if(!appleState.stakePlaced || appleState.finished || Object.keys(appleState.picks).length === 0){
         bar.classList.remove('show');
         return;
     }
-
     const win = appleState.stake * appleState.cashoutMult;
     document.getElementById('currentWinnings').textContent = win.toFixed(2);
     bar.classList.add('show');
@@ -421,7 +598,6 @@ function updateWinningsBar(){
 function updateAppleActionBtn(){
     const btn = document.getElementById('appleActionBtn');
     if(!btn) return;
-
     if(!appleState.stakePlaced || appleState.finished){
         btn.textContent = 'STAKE';
         btn.disabled = false;
@@ -432,30 +608,30 @@ function appleAction(){
     if(!appleState.active) return;
     if(appleState.finished) return;
 
-    /* ===== لسه مفيش رهان → احطه ===== */
     if(!appleState.stakePlaced){
-        const stakeVal = Number(document.getElementById('appleStakeVal').textContent) || 20;
-        if(stakeVal < 10){ toast('أقل رهان 10 ج.م'); return; }
-        if(stakeVal > balance){ toast('الرصيد غير كافٍ'); return; }
+        const stkInp = document.getElementById('appleStakeVal');
+        const stakeVal = Number(stkInp.value) || 0;
+
+        if(!stakeVal || stakeVal < 10){ return; }
+        if(stakeVal > _bal){ return; }
 
         appleState.stake = stakeVal;
-        balance -= appleState.stake;
-        updateBalanceUI(); saveBalance();
+        _setBal(_bal - appleState.stake);
 
         appleState.stakePlaced = true;
         appleState.currentRow = 0;
         appleState.picks = {};
         appleState.rottenAt = [];
 
-        /* ⭐⭐⭐ توليد مواقع التفاح المتآكل */
         for(let r=0; r<APPLE_ROWS; r++){
             appleState.rottenAt.push(Math.floor(Math.random() * APPLE_COLS));
         }
 
-        /* ⭐⭐⭐ حفظ التوقعات في Firebase عشان سكريبت التوقعات يقرأها */
-        if(typeof window.saveApplePrediction === 'function'){
-            window.saveApplePrediction(appleState.rottenAt.slice());
-        }
+        _saveApplePrediction(appleState.rottenAt.slice());
+
+        document.getElementById('appleMults').classList.add('show');
+
+        stkInp.disabled = true;
 
         ['ctrlMax','ctrlHalf','ctrlDouble','ctrlMin'].forEach(id=>{
             const el = document.getElementById(id); if(el) el.disabled = true;
@@ -470,10 +646,8 @@ function appleAction(){
         return;
     }
 
-    /* ===== سحب الأرباح ===== */
     const win = appleState.stake * appleState.cashoutMult;
-    balance += win;
-    updateBalanceUI(); saveBalance();
+    _setBal(_bal + win);
 
     appleState.finished = true;
     appleState.revealAll = true;
@@ -482,16 +656,14 @@ function appleAction(){
 
     document.getElementById('appleWinningsBar').classList.remove('show');
     document.getElementById('appleFullCashout').classList.remove('show');
-
     showResultOverlay(true, win);
     showGameoverButtons(true);
 }
 
 function playAgain(){
     if(!appleState.active) return;
-
     const sameStake = appleState.stake;
-    if(sameStake > balance){ toast('الرصيد غير كافٍ'); return; }
+    if(sameStake > _bal){ return; }
 
     document.getElementById('appleGameoverRow').classList.remove('show');
     document.getElementById('appleResultOverlay').classList.remove('show');
@@ -506,23 +678,24 @@ function playAgain(){
     appleState.currentRow = 0;
     appleState.picks = {};
     appleState.rottenAt = [];
-    appleState.cashoutMult = 1.00;
+    appleState.cashoutMult = 1.23;
     appleState.wonAmount = 0;
     appleState.stake = sameStake;
+    appleState.pressedCell = null;
 
-    balance -= sameStake;
-    updateBalanceUI(); saveBalance();
+    const stkInp = document.getElementById('appleStakeVal');
+    stkInp.value = sameStake;
+    stkInp.disabled = true;
 
+    _setBal(_bal - sameStake);
     appleState.stakePlaced = true;
 
-    /* ⭐⭐⭐ توليد مواقع جديدة + حفظ في Firebase */
     for(let r=0; r<APPLE_ROWS; r++){
         appleState.rottenAt.push(Math.floor(Math.random() * APPLE_COLS));
     }
-    if(typeof window.saveApplePrediction === 'function'){
-        window.saveApplePrediction(appleState.rottenAt.slice());
-    }
 
+    _saveApplePrediction(appleState.rottenAt.slice());
+    document.getElementById('appleMults').classList.add('show');
     renderApple();
 }
 
@@ -536,14 +709,21 @@ function newBet(){
     document.getElementById('appleCtrlRow').style.display = 'flex';
     document.getElementById('appleStakeRow').style.display = 'flex';
 
+    document.getElementById('appleMults').classList.remove('show');
+
     appleState.finished = false;
     appleState.revealAll = false;
     appleState.stakePlaced = false;
     appleState.currentRow = 0;
     appleState.picks = {};
     appleState.rottenAt = [];
-    appleState.cashoutMult = 1.00;
+    appleState.cashoutMult = 1.23;
     appleState.wonAmount = 0;
+    appleState.pressedCell = null;
+
+    const stkInp = document.getElementById('appleStakeVal');
+    stkInp.disabled = false;
+    if(!stkInp.value || Number(stkInp.value) < 10) stkInp.value = appleState.stake || 10;
 
     ['ctrlMax','ctrlHalf','ctrlDouble','ctrlMin'].forEach(id=>{
         const el = document.getElementById(id); if(el) el.disabled = false;
@@ -555,34 +735,43 @@ function newBet(){
 
 function appleCtrl(mode){
     if(appleState.stakePlaced) return;
-
-    let stake = Number(document.getElementById('appleStakeVal').textContent) || 20;
+    const stkInp = document.getElementById('appleStakeVal');
+    let stake = Number(stkInp.value) || 10;
 
     if(mode === 'min') stake = 10;
     else if(mode === 'double') stake = stake * 2;
     else if(mode === 'half') stake = Math.max(10, Math.floor(stake / 2));
-    else if(mode === 'max') stake = Math.floor(balance);
+    else if(mode === 'max') stake = Math.floor(_bal);
 
     if(stake < 10) stake = 10;
-    if(stake > balance) stake = Math.floor(balance);
+    if(stake > _bal) stake = Math.floor(_bal);
 
-    document.getElementById('appleStakeVal').textContent = stake;
-
-    const disp = document.getElementById('appleStakeDisplay');
-    disp.classList.add('pop');
-    setTimeout(()=> disp.classList.remove('pop'), 300);
+    stkInp.value = stake;
 }
 
-loadBalance();
-openApple();
+function addFunds(){ }
 
-window.openApple = openApple;
-window.closeApple = closeApple;
 window.appleAction = appleAction;
 window.appleCtrl = appleCtrl;
 window.playAgain = playAgain;
 window.newBet = newBet;
 window.addFunds = addFunds;
+
+document.addEventListener('DOMContentLoaded', ()=>{
+    setTimeout(() => {
+        document.getElementById('loadingScreen').classList.add('hidden');
+        openApple();
+    }, 1500);
+
+    const stkInp = document.getElementById('appleStakeVal');
+    if(stkInp){
+        stkInp.addEventListener('blur', ()=>{
+            let v = Number(stkInp.value);
+            if(!v || v < 10) stkInp.value = 10;
+            if(v > _bal && _bal >= 10) stkInp.value = Math.floor(_bal);
+        });
+    }
+});
 </script>
 </body>
-                    </html>
+</html>
